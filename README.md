@@ -5,6 +5,16 @@
 
 A drop-in Flutter widget to collect and display user feedback via **Discord Forum Channels**. Creates structured forum posts with tags, device info, screenshots, and real-time updates — styled to match the Discord mobile app.
 
+## Screenshots
+
+| Forum Post List | Post Detail |
+| :---: | :---: |
+| ![Forum Post List](screenshots/feedback_list.png) | ![Post Detail](screenshots/reaction_overlay.png) |
+
+### Demo
+
+![Demo](screenshots/demo.gif)
+
 ## Features
 
 - **Forum Channel support** — creates structured posts (threads) with titles and tags
@@ -39,14 +49,7 @@ A drop-in Flutter widget to collect and display user feedback via **Discord Foru
 2. Add tags (e.g., `Suggestion`, `BUG`, `Feature`, `Submitted`)
 3. Right-click the channel → **Copy Channel ID** (enable Developer Mode first)
 
-### 3. Install
-
-```yaml
-dependencies:
-  discord_feedback: ^2.0.0
-```
-
-### 4. Use
+### 3. Use
 
 ```dart
 import 'package:discord_feedback/discord_feedback.dart';
