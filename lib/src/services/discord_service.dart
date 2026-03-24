@@ -1,26 +1,35 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:flutter_discord_client/flutter_discord_client.dart';
 import 'package:image_picker/image_picker.dart';
 import '../models/models.dart';
 
 class DiscordService {
   final String botToken;
-  late final Dio _dio;
+  late final FlutterDiscordClient _client;
+  late final DefaultApi _api;
 
-  static const String _baseUrl = 'https://discord.com/api/v10';
+  Dio get dio => _client.dio;
+
+  /// Exposes the generated [DefaultApi] for advanced usage beyond
+  /// the convenience methods provided by this class.
+  DefaultApi get api => _api;
 
   ForumChannel? _cachedChannel;
 
   DiscordService({required this.botToken}) {
-    _dio = Dio(BaseOptions(
-      baseUrl: _baseUrl,
-      connectTimeout: const Duration(seconds: 10),
-      receiveTimeout: const Duration(seconds: 10),
-      headers: {
-        'Authorization': 'Bot $botToken',
-        'Content-Type': 'application/json',
-      },
-    ));
+    _client = FlutterDiscordClient(
+      dio: Dio(BaseOptions(
+        baseUrl: FlutterDiscordClient.basePath,
+        connectTimeout: const Duration(seconds: 10),
+        receiveTimeout: const Duration(seconds: 10),
+        headers: {
+          'Authorization': 'Bot $botToken',
+          'Content-Type': 'application/json',
+        },
+      )),
+    );
+    _api = _client.getDefaultApi();
   }
 
   // ── Forum Channel ──────────────────────────────────────────────────────────
@@ -28,7 +37,7 @@ class DiscordService {
   Future<ForumChannel> getChannel(String channelId) async {
     if (_cachedChannel?.id == channelId) return _cachedChannel!;
     try {
-      final response = await _dio.get('/channels/$channelId');
+      final response = await dio.get('/channels/$channelId');
       _cachedChannel =
           ForumChannel.fromJson(response.data as Map<String, dynamic>);
       return _cachedChannel!;
@@ -50,7 +59,7 @@ class DiscordService {
     try {
       final channel = await getChannel(channelId);
       final response =
-          await _dio.get('/guilds/${channel.guildId}/threads/active');
+          await dio.get('/guilds/${channel.guildId}/threads/active');
       final data = response.data as Map<String, dynamic>;
       final threads = (data['threads'] as List?) ?? [];
       return threads
@@ -71,7 +80,7 @@ class DiscordService {
     String? before,
   }) async {
     try {
-      final response = await _dio.get(
+      final response = await dio.get(
         '/channels/$channelId/threads/archived/public',
         queryParameters: <String, dynamic>{
           'limit': limit,
@@ -113,7 +122,7 @@ class DiscordService {
     String? after,
   }) async {
     try {
-      final response = await _dio.get(
+      final response = await dio.get(
         '/channels/$threadId/messages',
         queryParameters: <String, dynamic>{
           'limit': limit,
@@ -170,7 +179,7 @@ class DiscordService {
         );
       }
 
-      final response = await _dio.post(
+      final response = await dio.post(
         '/channels/$channelId/threads',
         data: <String, dynamic>{
           'name': title,
@@ -221,7 +230,7 @@ class DiscordService {
       ));
     }
 
-    final response = await _dio.post(
+    final response = await dio.post(
       '/channels/$channelId/threads',
       data: formData,
       options: Options(
@@ -250,7 +259,7 @@ class DiscordService {
         );
       }
 
-      final response = await _dio.post(
+      final response = await dio.post(
         '/channels/$threadId/messages',
         data: <String, dynamic>{
           'content': content,
@@ -290,7 +299,7 @@ class DiscordService {
       ));
     }
 
-    final response = await _dio.post(
+    final response = await dio.post(
       '/channels/$threadId/messages',
       data: formData,
       options: Options(
@@ -309,7 +318,7 @@ class DiscordService {
     required String emoji,
   }) async {
     try {
-      await _dio.put(
+      await dio.put(
         '/channels/$channelId/messages/$messageId/reactions/${Uri.encodeComponent(emoji)}/@me',
       );
     } on DioException catch (e) {
@@ -326,7 +335,7 @@ class DiscordService {
     required String emoji,
   }) async {
     try {
-      await _dio.delete(
+      await dio.delete(
         '/channels/$channelId/messages/$messageId/reactions/${Uri.encodeComponent(emoji)}/@me',
       );
     } on DioException catch (e) {
@@ -341,7 +350,7 @@ class DiscordService {
 
   Future<DiscordUser> getCurrentBot() async {
     try {
-      final response = await _dio.get('/users/@me');
+      final response = await dio.get('/users/@me');
       return DiscordUser.fromJson(response.data as Map<String, dynamic>);
     } on DioException catch (e) {
       throw DiscordServiceException(

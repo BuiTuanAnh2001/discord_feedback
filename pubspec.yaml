@@ -1,6 +1,6 @@
 name: discord_feedback
 description: "A drop-in Flutter widget to collect and display user feedback via Discord Forum Channels. Creates structured forum posts with tags, device info, and screenshots."
-version: 2.1.0
+version: 3.0.0
 homepage: https://github.com/BuiTuanAnh2001/discord_feedback
 repository: https://github.com/BuiTuanAnh2001/discord_feedback
 issue_tracker: https://github.com/BuiTuanAnh2001/discord_feedback/issues
@@ -19,13 +19,14 @@ screenshots:
     path: screenshots/reaction_overlay.png
 
 environment:
-  sdk: ^3.7.2
-  flutter: ">=3.22.0"
+  sdk: ^3.10.0
+  flutter: ">=3.38.0"
 
 dependencies:
   flutter:
     sdk: flutter
 
+  flutter_discord_client: ^1.0.0
   dio: ^5.7.0
   intl: ^0.20.2
   cached_network_image: ^3.4.1

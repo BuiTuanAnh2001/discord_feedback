@@ -2,6 +2,10 @@
 /// via Discord Forum Channels.
 library;
 
+// Re-export flutter_discord_client for advanced usage
+export 'package:flutter_discord_client/flutter_discord_client.dart'
+    show FlutterDiscordClient, DefaultApi;
+
 // Models
 export 'src/models/models.dart';
 

@@ -1,3 +1,15 @@
+## 3.0.0
+
+**Breaking**: Migrated to `flutter_discord_client` package. Requires Dart SDK `^3.10.0` / Flutter `>=3.38.0`.
+
+### Changed
+- `DiscordService` now uses `FlutterDiscordClient` (OpenAPI-generated Discord v10 client) internally
+- Exposes `DiscordService.api` for advanced access to the full generated `DefaultApi`
+- Exposes `DiscordService.dio` for raw HTTP access via the pre-configured Dio instance
+- Re-exports `FlutterDiscordClient` and `DefaultApi` from barrel file
+- Minimum SDK: Dart `^3.10.0`, Flutter `>=3.38.0`
+- Removed deprecated `null-aware-elements` experiment flag
+
 ## 2.1.0
 
 ### Added

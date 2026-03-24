@@ -37,6 +37,7 @@ class MyApp extends StatelessWidget {
         // Change the initial theme or let users customize via the palette button.
         theme: DiscordFeedbackTheme.dark,
         persistTheme: true,
+        showCreateButton: false,
       ),
     );
   }
