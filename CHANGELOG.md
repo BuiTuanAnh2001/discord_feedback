@@ -1,3 +1,13 @@
+## 2.1.0
+
+### Added
+- `showCreateButton` parameter to show/hide the floating create feedback button
+
+### Changed
+- All UI strings changed from Vietnamese to English
+- Separated `views/` (full-screen pages) from `widgets/` (reusable components)
+- Removed `lib/main.dart` from package (was development-only)
+
 ## 2.0.2
 
 - Fixed README images: use absolute GitHub raw URLs so screenshots display on pub.dev

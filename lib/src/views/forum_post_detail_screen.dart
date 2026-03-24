@@ -10,7 +10,7 @@ import '../models/models.dart';
 import '../services/discord_gateway.dart';
 import '../services/discord_service.dart';
 import '../theme/discord_feedback_theme.dart';
-import 'message_bubble.dart';
+import '../widgets/message_bubble.dart';
 
 class ForumPostDetailScreen extends StatefulWidget {
   final DiscordService service;
@@ -248,7 +248,7 @@ class _ForumPostDetailScreenState extends State<ForumPostDetailScreen> {
                       borderRadius: BorderRadius.circular(20),
                       onTap: () {
                         Clipboard.setData(ClipboardData(text: thread.name));
-                        _snack('Đã sao chép tiêu đề');
+                        _snack('Title copied to clipboard');
                       },
                       child: Padding(
                         padding: const EdgeInsets.all(8),
@@ -336,7 +336,7 @@ class _ForumPostDetailScreenState extends State<ForumPostDetailScreen> {
               FilledButton.icon(
                 onPressed: _loadMessages,
                 icon: const Icon(Icons.refresh_rounded, size: 18),
-                label: const Text('Thử lại'),
+                label: const Text('Retry'),
                 style: FilledButton.styleFrom(backgroundColor: t.accent),
               ),
             ],
@@ -346,7 +346,7 @@ class _ForumPostDetailScreenState extends State<ForumPostDetailScreen> {
     }
     if (_messages.isEmpty) {
       return Center(
-          child: Text('Không có tin nhắn',
+          child: Text('No messages yet',
               style: TextStyle(color: t.textMuted, fontSize: 14)));
     }
 

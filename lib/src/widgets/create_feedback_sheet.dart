@@ -105,11 +105,11 @@ class _CreateFeedbackSheetState extends State<CreateFeedbackSheet> {
   Future<void> _submit() async {
     final message = _messageCtrl.text.trim();
     if (message.isEmpty) {
-      _snack('Vui lòng nhập nội dung feedback', isError: true);
+      _snack('Please enter your feedback message', isError: true);
       return;
     }
     if (_selectedTagIds.isEmpty && widget.availableTags.isNotEmpty) {
-      _snack('Vui lòng chọn ít nhất 1 tag', isError: true);
+      _snack('Please select at least 1 tag', isError: true);
       return;
     }
 
@@ -130,7 +130,7 @@ class _CreateFeedbackSheetState extends State<CreateFeedbackSheet> {
       );
 
       if (!mounted) return;
-      _snack('Đã gửi feedback thành công!');
+      _snack('Feedback submitted successfully!');
       Navigator.pop(context, true);
     } catch (e) {
       if (!mounted) return;
@@ -145,7 +145,7 @@ class _CreateFeedbackSheetState extends State<CreateFeedbackSheet> {
           imageQuality: 85, maxWidth: 1920, maxHeight: 1920);
       if (images.isNotEmpty) setState(() => _screenshots.addAll(images));
     } catch (e) {
-      _snack('Không thể chọn ảnh: $e', isError: true);
+      _snack('Failed to pick image: $e', isError: true);
     }
   }
 
@@ -158,7 +158,7 @@ class _CreateFeedbackSheetState extends State<CreateFeedbackSheet> {
           maxHeight: 1920);
       if (photo != null) setState(() => _screenshots.add(photo));
     } catch (e) {
-      _snack('Không thể chụp ảnh: $e', isError: true);
+      _snack('Failed to take photo: $e', isError: true);
     }
   }
 

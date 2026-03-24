@@ -6,12 +6,12 @@ import '../models/models.dart';
 import '../services/discord_gateway.dart';
 import '../services/discord_service.dart';
 import '../theme/discord_feedback_theme.dart';
-import 'create_feedback_sheet.dart';
-import 'discord_header.dart';
-import 'forum_post_card.dart';
+import '../widgets/create_feedback_sheet.dart';
+import '../widgets/discord_header.dart';
+import '../widgets/forum_post_card.dart';
 import 'forum_post_detail_screen.dart';
-import 'sort_tag_bar.dart';
-import 'theme_customizer_sheet.dart';
+import '../widgets/sort_tag_bar.dart';
+import '../widgets/theme_customizer_sheet.dart';
 
 class ForumPostListScreen extends StatefulWidget {
   final DiscordService service;
@@ -24,6 +24,7 @@ class ForumPostListScreen extends StatefulWidget {
   final Widget? leading;
   final Widget? channelIcon;
   final String? channelEmoji;
+  final bool showCreateButton;
 
   const ForumPostListScreen({
     super.key,
@@ -37,6 +38,7 @@ class ForumPostListScreen extends StatefulWidget {
     this.leading,
     this.channelIcon,
     this.channelEmoji,
+    this.showCreateButton = true,
   });
 
   @override
@@ -212,7 +214,7 @@ class _ForumPostListScreenState extends State<ForumPostListScreen> {
           ],
         ),
       ),
-      floatingActionButton: _isLoading
+      floatingActionButton: _isLoading || !widget.showCreateButton
           ? null
           : FloatingActionButton(
               onPressed: _openCreateFeedback,
@@ -295,7 +297,7 @@ class _ForumPostListScreenState extends State<ForumPostListScreen> {
           children: [
             Icon(Icons.wifi_off_rounded, size: 48, color: t.textMuted),
             const SizedBox(height: 16),
-            Text('Không thể kết nối',
+            Text('Unable to connect',
                 style: TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.w600,
@@ -308,7 +310,7 @@ class _ForumPostListScreenState extends State<ForumPostListScreen> {
             FilledButton.icon(
               onPressed: _loadData,
               icon: const Icon(Icons.refresh_rounded, size: 18),
-              label: const Text('Thử lại'),
+              label: const Text('Retry'),
               style: FilledButton.styleFrom(
                 backgroundColor: t.accent,
                 foregroundColor: Colors.white,

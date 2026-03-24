@@ -7,7 +7,7 @@ A drop-in Flutter widget to collect and display user feedback via **Discord Foru
 
 ## Screenshots
 
-| Forum Post List | Post Detail |
+| Forum Post List | Light mode |
 | :---: | :---: |
 | ![Forum Post List](https://raw.githubusercontent.com/BuiTuanAnh2001/discord_feedback/master/screenshots/feedback_list.png) | ![Post Detail](https://raw.githubusercontent.com/BuiTuanAnh2001/discord_feedback/master/screenshots/reaction_overlay.png) |
 

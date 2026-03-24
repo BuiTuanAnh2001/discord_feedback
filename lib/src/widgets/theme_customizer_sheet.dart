@@ -3,20 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../theme/discord_feedback_theme.dart';
 
-const _presetAccentColors = <Color>[
-  Color(0xFF5865F2), // Blurple
-  Color(0xFFEB459E), // Fuchsia
-  Color(0xFFFEE75C), // Yellow
-  Color(0xFF57F287), // Green
-  Color(0xFFED4245), // Red
-  Color(0xFFFF7B3A), // Orange
-  Color(0xFF5DADEC), // Sky Blue
-  Color(0xFF9B59B6), // Purple
-  Color(0xFF1ABC9C), // Teal
-  Color(0xFFE91E63), // Pink
-  Color(0xFF00BCD4), // Cyan
-  Color(0xFF8BC34A), // Lime
-];
+const _presetAccentColors = Colors.primaries;
 
 class _ThemePreset {
   final String name;

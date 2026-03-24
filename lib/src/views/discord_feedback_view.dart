@@ -42,6 +42,9 @@ class DiscordFeedbackView extends StatefulWidget {
   /// If false, the theme is NOT persisted to local storage.
   final bool persistTheme;
 
+  /// Whether to show the floating action button for creating new feedback posts.
+  final bool showCreateButton;
+
   const DiscordFeedbackView({
     super.key,
     required this.botToken,
@@ -57,6 +60,7 @@ class DiscordFeedbackView extends StatefulWidget {
     this.channelEmoji,
     this.onThemeChanged,
     this.persistTheme = true,
+    this.showCreateButton = true,
   });
 
   @override
@@ -103,6 +107,7 @@ class _DiscordFeedbackViewState extends State<DiscordFeedbackView> {
       leading: widget.leading,
       channelIcon: widget.channelIcon,
       channelEmoji: widget.channelEmoji,
+      showCreateButton: widget.showCreateButton,
     );
   }
 }
