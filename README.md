@@ -9,11 +9,11 @@ A drop-in Flutter widget to collect and display user feedback via **Discord Foru
 
 | Forum Post List | Post Detail |
 | :---: | :---: |
-| ![Forum Post List](screenshots/feedback_list.png) | ![Post Detail](screenshots/reaction_overlay.png) |
+| ![Forum Post List](https://raw.githubusercontent.com/BuiTuanAnh2001/discord_feedback/master/screenshots/feedback_list.png) | ![Post Detail](https://raw.githubusercontent.com/BuiTuanAnh2001/discord_feedback/master/screenshots/reaction_overlay.png) |
 
 ### Demo
 
-![Demo](screenshots/demo.gif)
+![Demo](https://raw.githubusercontent.com/BuiTuanAnh2001/discord_feedback/master/screenshots/demo.gif)
 
 ## Features
 

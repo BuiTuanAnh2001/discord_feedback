@@ -1,3 +1,7 @@
+## 2.0.2
+
+- Fixed README images: use absolute GitHub raw URLs so screenshots display on pub.dev
+
 ## 2.0.1
 
 - Updated README: removed redundant install section, added screenshots and demo gif
