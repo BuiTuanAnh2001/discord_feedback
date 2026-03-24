@@ -5,3 +5,6 @@ export 'discord_embed.dart';
 export 'discord_reaction.dart';
 export 'discord_emoji.dart';
 export 'discord_service_exception.dart';
+export 'forum_tag.dart';
+export 'forum_channel.dart';
+export 'forum_thread.dart';

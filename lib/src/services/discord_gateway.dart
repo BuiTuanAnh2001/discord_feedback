@@ -3,17 +3,18 @@ import 'dart:convert';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import '../models/models.dart';
 
-/// Loại sự kiện từ Discord Gateway.
 enum GatewayEventType {
   messageCreate,
   messageUpdate,
   messageDelete,
   reactionAdd,
   reactionRemove,
+  threadCreate,
+  threadUpdate,
+  threadDelete,
   ready,
 }
 
-/// Dữ liệu reaction event (add/remove).
 class ReactionEventData {
   final String messageId;
   final String channelId;
@@ -37,19 +38,7 @@ class ReactionEventData {
   }
 }
 
-/// Kết nối WebSocket tới Discord Gateway để nhận events realtime.
-///
-/// ```dart
-/// final gateway = DiscordGateway(
-///   botToken: 'YOUR_TOKEN',
-///   channelId: 'YOUR_CHANNEL_ID',
-/// );
-/// await gateway.connect();
-///
-/// gateway.onMessageCreate.listen((msg) {
-///   print('New message: ${msg.content}');
-/// });
-/// ```
+/// WebSocket connection to Discord Gateway for realtime events.
 class DiscordGateway {
   final String botToken;
   final String channelId;
@@ -67,41 +56,32 @@ class DiscordGateway {
   final _messageDeleteCtrl = StreamController<String>.broadcast();
   final _reactionAddCtrl = StreamController<ReactionEventData>.broadcast();
   final _reactionRemoveCtrl = StreamController<ReactionEventData>.broadcast();
+  final _threadCreateCtrl = StreamController<ForumThread>.broadcast();
+  final _threadUpdateCtrl = StreamController<ForumThread>.broadcast();
+  final _threadDeleteCtrl = StreamController<String>.broadcast();
   final _connectionCtrl = StreamController<bool>.broadcast();
 
-  /// Stream tin nhắn mới.
   Stream<DiscordMessage> get onMessageCreate => _messageCreateCtrl.stream;
-
-  /// Stream tin nhắn được chỉnh sửa.
   Stream<DiscordMessage> get onMessageUpdate => _messageUpdateCtrl.stream;
-
-  /// Stream ID tin nhắn bị xóa.
   Stream<String> get onMessageDelete => _messageDeleteCtrl.stream;
-
-  /// Stream reaction được thêm.
   Stream<ReactionEventData> get onReactionAdd => _reactionAddCtrl.stream;
-
-  /// Stream reaction bị gỡ.
   Stream<ReactionEventData> get onReactionRemove => _reactionRemoveCtrl.stream;
-
-  /// Stream trạng thái kết nối (true = connected, false = disconnected).
+  Stream<ForumThread> get onThreadCreate => _threadCreateCtrl.stream;
+  Stream<ForumThread> get onThreadUpdate => _threadUpdateCtrl.stream;
+  Stream<String> get onThreadDelete => _threadDeleteCtrl.stream;
   Stream<bool> get onConnectionChanged => _connectionCtrl.stream;
 
-  /// ID user của bot (có sau khi nhận READY event).
   String? get botUserId => _botUserId;
-
-  /// Trạng thái kết nối.
   bool get isConnected => _isConnected;
 
   static const _gatewayUrl =
       'wss://gateway.discord.gg/?v=10&encoding=json';
 
-  // GUILD_MESSAGES (512) | GUILD_MESSAGE_REACTIONS (1024) | MESSAGE_CONTENT (32768)
-  static const _intents = 512 | 1024 | 32768;
+  // GUILDS (1) | GUILD_MESSAGES (512) | GUILD_MESSAGE_REACTIONS (1024) | MESSAGE_CONTENT (32768)
+  static const _intents = 1 | 512 | 1024 | 32768;
 
   DiscordGateway({required this.botToken, required this.channelId});
 
-  /// Kết nối tới Discord Gateway.
   Future<void> connect() async {
     if (_disposed || _isConnected) return;
 
@@ -122,7 +102,6 @@ class DiscordGateway {
     }
   }
 
-  /// Ngắt kết nối.
   void disconnect() {
     _heartbeatTimer?.cancel();
     _channel?.sink.close();
@@ -130,7 +109,6 @@ class DiscordGateway {
     _connectionCtrl.add(false);
   }
 
-  /// Giải phóng tài nguyên. Sau khi gọi dispose() không thể dùng lại.
   void dispose() {
     _disposed = true;
     disconnect();
@@ -139,6 +117,9 @@ class DiscordGateway {
     _messageDeleteCtrl.close();
     _reactionAddCtrl.close();
     _reactionRemoveCtrl.close();
+    _threadCreateCtrl.close();
+    _threadUpdateCtrl.close();
+    _threadDeleteCtrl.close();
     _connectionCtrl.close();
   }
 
@@ -152,23 +133,21 @@ class DiscordGateway {
     if (seq != null) _lastSequence = seq;
 
     switch (op) {
-      case 10: // Hello
+      case 10:
         final interval =
             (data as Map<String, dynamic>)['heartbeat_interval'] as int;
         _startHeartbeat(interval);
         _sendIdentify();
         break;
-      case 11: // Heartbeat ACK — no action needed
+      case 11:
         break;
-      case 0: // Dispatch
+      case 0:
         if (eventName != null && data is Map<String, dynamic>) {
           _handleDispatch(eventName, data);
         }
         break;
-      case 7: // Reconnect requested
-        _scheduleReconnect();
-        break;
-      case 9: // Invalid session
+      case 7:
+      case 9:
         _scheduleReconnect();
         break;
     }
@@ -191,7 +170,6 @@ class DiscordGateway {
 
   void _startHeartbeat(int intervalMs) {
     _heartbeatTimer?.cancel();
-    // Gửi heartbeat đầu tiên sau khoảng random (theo spec Discord)
     Future.delayed(
       Duration(milliseconds: (intervalMs * 0.5).toInt()),
       () {
@@ -213,31 +191,42 @@ class DiscordGateway {
         _botUserId = user?['id'] as String?;
         break;
 
+      // Thread events — filter by parent_id (the forum channel)
+      case 'THREAD_CREATE':
+        if (data['parent_id'] != channelId) return;
+        _threadCreateCtrl.add(ForumThread.fromJson(data));
+        break;
+
+      case 'THREAD_UPDATE':
+        if (data['parent_id'] != channelId) return;
+        _threadUpdateCtrl.add(ForumThread.fromJson(data));
+        break;
+
+      case 'THREAD_DELETE':
+        if (data['parent_id'] != channelId) return;
+        _threadDeleteCtrl.add(data['id'] as String);
+        break;
+
+      // Message events — channel_id is the thread id for messages inside threads
       case 'MESSAGE_CREATE':
-        if (data['channel_id'] != channelId) return;
         _messageCreateCtrl.add(DiscordMessage.fromJson(data));
         break;
 
       case 'MESSAGE_UPDATE':
-        if (data['channel_id'] != channelId) return;
-        // MESSAGE_UPDATE có thể chỉ chứa partial data
         if (data.containsKey('author')) {
           _messageUpdateCtrl.add(DiscordMessage.fromJson(data));
         }
         break;
 
       case 'MESSAGE_DELETE':
-        if (data['channel_id'] != channelId) return;
         _messageDeleteCtrl.add(data['id'] as String);
         break;
 
       case 'MESSAGE_REACTION_ADD':
-        if (data['channel_id'] != channelId) return;
         _reactionAddCtrl.add(ReactionEventData.fromJson(data));
         break;
 
       case 'MESSAGE_REACTION_REMOVE':
-        if (data['channel_id'] != channelId) return;
         _reactionRemoveCtrl.add(ReactionEventData.fromJson(data));
         break;
     }
@@ -253,7 +242,6 @@ class DiscordGateway {
     if (_disposed) return;
     disconnect();
     _reconnectAttempts++;
-    // Exponential backoff: 1s, 2s, 4s, 8s, max 30s
     final delay = Duration(
       seconds: (_reconnectAttempts * 2).clamp(1, 30),
     );

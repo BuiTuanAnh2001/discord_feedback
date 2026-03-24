@@ -10,3 +10,7 @@ windows/
 *.lock
 lib/main.dart
 discord_feedback.iml
+.cursor/
+agent-transcripts/
+assets/
+test/

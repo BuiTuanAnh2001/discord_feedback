@@ -1,3 +1,28 @@
+## 2.0.0
+
+**Breaking**: Full rewrite from chat-style to Discord Forum Channel architecture.
+
+### Added
+- **Forum Channel support** — creates forum posts (threads) with titles, tags, and structured content
+- **`DiscordFeedbackTheme`** — full custom theme system with 3 presets (Dark, Light, Midnight)
+- **Theme customizer UI** — built-in palette button with preset selector, accent color picker, hex input, and advanced color overrides
+- **Theme persistence** — auto-save/load via `shared_preferences` (`ThemeStorage`)
+- **Dynamic tags** — tags fetched from Discord forum channel and selectable when creating posts
+- **Sort & View** — sort posts by creation time or last message, newest/oldest first
+- **Tag filter** — filter posts by tags with multi-select
+- **Discord mobile UI** — header with channel name, dots, emoji, chevron matching Discord app
+
+### Changed
+- `DiscordFeedbackView` now targets forum channels instead of regular text channels
+- `accentColor` parameter replaced by full `DiscordFeedbackTheme` object
+- `title` default changed to `'bug-and-suggestions'`
+- Removed `quickEmojis` and `enableImagePicker` parameters
+
+### Refactored
+- Extracted `ForumPostCard`, `DiscordHeader`, `SortTagBar`, `MessageBubble` into separate widget files
+- `ForumPostListScreen` reduced from ~1000 to ~300 lines
+- `ForumPostDetailScreen` reduced from ~700 to ~400 lines
+
 ## 1.0.0
 
 - Initial release

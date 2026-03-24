@@ -3,32 +3,18 @@
 [![Pub Version](https://img.shields.io/pub/v/discord_feedback.svg)](https://pub.dev/packages/discord_feedback)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-A drop-in Flutter widget to display, react, and reply to feedback messages from a Discord channel — powered by the Discord Bot API with **real-time WebSocket** support.
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/tuananhbui89/discord_feedback/main/screenshots/feedback_list.png" width="280" alt="Feedback List" />
-  <img src="https://raw.githubusercontent.com/tuananhbui89/discord_feedback/main/screenshots/reaction_overlay.png" width="280" alt="Reaction Overlay" />
-  <img src="https://raw.githubusercontent.com/tuananhbui89/discord_feedback/main/screenshots/message_detail.png" width="280" alt="Message Detail" />
-</p>
+A drop-in Flutter widget to collect and display user feedback via **Discord Forum Channels**. Creates structured forum posts with tags, device info, screenshots, and real-time updates — styled to match the Discord mobile app.
 
 ## Features
 
-- **View messages** from any Discord channel in a modern, professional UI
-- **React to messages** with emoji (long-press for quick reactions, Facebook-style)
-- **Reply to messages** directly from the app
-- **Send images & files** as attachments (camera + gallery picker)
-- **Real-time updates** via Discord Gateway WebSocket — new messages, reactions, edits, deletes
-- **Live indicator** shows connection status (green dot = connected)
-- **Pull-to-refresh** and infinite scroll pagination
-- **Auto-categorize** feedback as Bug / Feature / Improve
-- **Fully customizable** accent color, title, emoji set, and more
-
-## Demo
-
-<!-- Replace with your actual demo GIF/video after recording -->
-<p align="center">
-  <img src="https://raw.githubusercontent.com/tuananhbui89/discord_feedback/main/screenshots/demo.gif" width="300" alt="Demo" />
-</p>
+- **Forum Channel support** — creates structured posts (threads) with titles and tags
+- **Dynamic tags** — fetched from your Discord forum channel, selectable when posting
+- **Custom themes** — 3 built-in presets (Dark, Light, Midnight) + full color customizer with hex input
+- **Theme persistence** — user theme choices auto-saved and restored via `shared_preferences`
+- **Real-time updates** — via Discord Gateway WebSocket (new posts, messages, reactions)
+- **Discord mobile UI** — header, Sort & View, Tags filter bar match the Discord app
+- **Screenshots & attachments** — camera + gallery picker, uploaded to Discord
+- **Device info** — auto-collects OS, app version, and timestamp
 
 ## Getting Started
 
@@ -37,26 +23,27 @@ A drop-in Flutter widget to display, react, and reply to feedback messages from 
 1. Go to [Discord Developer Portal](https://discord.com/developers/applications)
 2. Click **New Application** → name it → **Create**
 3. Go to **Bot** tab → **Reset Token** → copy the token
-4. Enable under **Privileged Gateway Intents**:
-   - ✅ Message Content Intent
+4. Enable **Privileged Gateway Intents**: ✅ Message Content Intent
 5. Go to **OAuth2 → URL Generator**, select `bot` scope with permissions:
    - Read Messages / View Channels
    - Send Messages
    - Add Reactions
    - Attach Files
    - Read Message History
-6. Use the generated URL to invite the bot to your server
+   - Create Public Threads
+6. Invite the bot to your server using the generated URL
 
-### 2. Get Channel ID
+### 2. Create a Forum Channel
 
-1. In Discord: **User Settings → Advanced → Enable Developer Mode**
-2. Right-click the channel → **Copy Channel ID**
+1. In your Discord server, create a **Forum Channel**
+2. Add tags (e.g., `Suggestion`, `BUG`, `Feature`, `Submitted`)
+3. Right-click the channel → **Copy Channel ID** (enable Developer Mode first)
 
 ### 3. Install
 
 ```yaml
 dependencies:
-  discord_feedback: ^1.0.0
+  discord_feedback: ^2.0.0
 ```
 
 ### 4. Use
@@ -66,95 +53,140 @@ import 'package:discord_feedback/discord_feedback.dart';
 
 DiscordFeedbackView(
   botToken: 'YOUR_BOT_TOKEN',
-  channelId: 'YOUR_CHANNEL_ID',
-  enableRealtime: true, // real-time via WebSocket
+  channelId: 'YOUR_FORUM_CHANNEL_ID',
+  enableRealtime: true,
+  appName: 'My App',
+  appVersion: '1.0.0',
 )
-```
-
-## Full Example
-
-```dart
-import 'package:flutter/material.dart';
-import 'package:discord_feedback/discord_feedback.dart';
-
-void main() => runApp(const MyApp());
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: DiscordFeedbackView(
-        botToken: 'YOUR_BOT_TOKEN',
-        channelId: 'YOUR_CHANNEL_ID',
-        title: 'User Feedback',
-        accentColor: Color(0xFF5865F2),
-        quickEmojis: ['👍', '👎', '❤️', '🔥', '👀', '✅'],
-        enableImagePicker: true,
-        enableRealtime: true,
-      ),
-    );
-  }
-}
 ```
 
 ## Customization
 
-| Parameter           | Type           | Default                                | Description                          |
-| ------------------- | -------------- | -------------------------------------- | ------------------------------------ |
-| `botToken`          | `String`       | **required**                           | Discord bot token                    |
-| `channelId`         | `String`       | **required**                           | Discord channel ID                   |
-| `title`             | `String`       | `'Feedback'`                           | App bar title                        |
-| `accentColor`       | `Color`        | `Color(0xFF5865F2)` (Discord Blurple)  | Primary accent color                 |
-| `quickEmojis`       | `List<String>` | `['👍','👎','❤️','🔥','👀','✅']`      | Emojis in quick-react bar            |
-| `enableImagePicker` | `bool`         | `true`                                 | Show attach image button             |
-| `enableRealtime`    | `bool`         | `false`                                | Enable WebSocket real-time updates   |
+### Parameters
+
+| Parameter        | Type                               | Default                      | Description                                    |
+| ---------------- | ---------------------------------- | ---------------------------- | ---------------------------------------------- |
+| `botToken`       | `String`                           | **required**                 | Discord bot token                              |
+| `channelId`      | `String`                           | **required**                 | Discord Forum Channel ID                       |
+| `title`          | `String`                           | `'bug-and-suggestions'`      | Channel name in header                         |
+| `theme`          | `DiscordFeedbackTheme`             | `DiscordFeedbackTheme.dark`  | Visual theme (initial)                         |
+| `enableRealtime` | `bool`                             | `false`                      | Enable WebSocket real-time updates             |
+| `appName`        | `String?`                          | `null`                       | App name in feedback posts                     |
+| `appVersion`     | `String?`                          | `null`                       | App version in feedback info                   |
+| `deviceInfo`     | `String?`                          | auto-detected                | Device info string                             |
+| `persistTheme`   | `bool`                             | `true`                       | Auto-save theme to local storage               |
+| `onThemeChanged` | `ValueChanged<DiscordFeedbackTheme>?` | `null`                    | Callback when theme changes                    |
+| `leading`        | `Widget?`                          | back arrow                   | Custom leading widget in header                |
+| `channelIcon`    | `Widget?`                          | forum icon                   | Custom channel icon in header                  |
+| `channelEmoji`   | `String?`                          | `null`                       | Emoji next to channel name                     |
+
+### Themes
+
+```dart
+// Built-in presets
+DiscordFeedbackView(theme: DiscordFeedbackTheme.dark)
+DiscordFeedbackView(theme: DiscordFeedbackTheme.light)
+DiscordFeedbackView(theme: DiscordFeedbackTheme.midnight)
+
+// Custom theme
+DiscordFeedbackView(
+  theme: DiscordFeedbackTheme.dark.copyWith(
+    accent: Colors.pink,
+    successColor: Colors.teal,
+  ),
+)
+
+// Users can also customize the theme at runtime via the built-in
+// palette button in the header. Changes are auto-persisted.
+```
+
+### Theme Persistence
+
+Theme is automatically saved to `shared_preferences` and restored on next launch. Disable with `persistTheme: false`.
+
+```dart
+// Manual save/load
+await ThemeStorage.save(myTheme);
+final saved = await ThemeStorage.load();
+await ThemeStorage.clear();
+```
 
 ## Real-time Events
 
-When `enableRealtime: true`, the package connects to Discord Gateway WebSocket and handles:
+When `enableRealtime: true`, the widget connects to Discord Gateway and handles:
 
-| Event                    | Behavior                                    |
-| ------------------------ | ------------------------------------------- |
-| `MESSAGE_CREATE`         | New message appears at top instantly         |
-| `MESSAGE_UPDATE`         | Edited message updates in-place              |
-| `MESSAGE_DELETE`         | Deleted message disappears immediately       |
-| `MESSAGE_REACTION_ADD`   | Reaction count updates in real-time          |
-| `MESSAGE_REACTION_REMOVE`| Reaction count decreases in real-time        |
+| Event                     | Behavior                              |
+| ------------------------- | ------------------------------------- |
+| `THREAD_CREATE`           | New post appears instantly            |
+| `THREAD_UPDATE`           | Post metadata updates in-place        |
+| `THREAD_DELETE`           | Post disappears immediately           |
+| `MESSAGE_CREATE`          | New message in thread detail view     |
+| `MESSAGE_UPDATE`          | Edited message updates in-place       |
+| `MESSAGE_DELETE`          | Deleted message disappears            |
+| `MESSAGE_REACTION_ADD`    | Reaction count updates in real-time   |
+| `MESSAGE_REACTION_REMOVE` | Reaction count decreases              |
 
 Auto-reconnect with exponential backoff if connection drops.
 
 ## Advanced Usage
 
-Use `DiscordService` and `DiscordGateway` directly for custom integrations:
+Use services directly for custom integrations:
 
 ```dart
 import 'package:discord_feedback/discord_feedback.dart';
 
 // HTTP API
 final service = DiscordService(botToken: 'TOKEN');
-final messages = await service.getMessages(channelId: 'CH_ID');
-await service.sendMessage(channelId: 'CH_ID', content: 'Hello!');
-await service.addReaction(channelId: 'CH_ID', messageId: 'MSG_ID', emoji: '👍');
+final posts = await service.getForumPosts(channelId: 'CHANNEL_ID');
+await service.createForumPost(
+  channelId: 'CHANNEL_ID',
+  title: '[BUG] App crashes on login',
+  content: 'Steps to reproduce...',
+  appliedTags: ['tag_id_1', 'tag_id_2'],
+);
 
 // WebSocket Gateway
-final gateway = DiscordGateway(botToken: 'TOKEN', channelId: 'CH_ID');
+final gateway = DiscordGateway(botToken: 'TOKEN', channelId: 'CHANNEL_ID');
 await gateway.connect();
+gateway.onThreadCreate.listen((thread) => print(thread.name));
 gateway.onMessageCreate.listen((msg) => print(msg.content));
-gateway.onReactionAdd.listen((event) => print(event.emoji.name));
+```
+
+## Architecture
+
+```
+lib/
+├── discord_feedback.dart          # Barrel file
+└── src/
+    ├── models/                    # Data models (Message, User, Thread, Tag, ...)
+    ├── services/
+    │   ├── discord_service.dart   # REST API client (Dio)
+    │   ├── discord_gateway.dart   # WebSocket real-time events
+    │   └── theme_storage.dart     # SharedPreferences persistence
+    ├── theme/
+    │   └── discord_feedback_theme.dart  # Theme data + presets
+    └── widgets/
+        ├── discord_feedback_view.dart   # Main entry widget
+        ├── forum_post_list_screen.dart  # Post list (uses extracted widgets)
+        ├── forum_post_card.dart         # Single post card
+        ├── discord_header.dart          # Discord-style header bar
+        ├── sort_tag_bar.dart            # Sort & View + Tags filter
+        ├── forum_post_detail_screen.dart # Thread detail + messages
+        ├── message_bubble.dart          # Single message bubble
+        ├── create_feedback_sheet.dart   # New post bottom sheet
+        └── theme_customizer_sheet.dart  # Theme picker bottom sheet
 ```
 
 ## Models
 
-| Model               | Helpers                                  |
-| -------------------- | ---------------------------------------- |
-| `DiscordMessage`     | `copyWith()`, `hasImages`, `hasReactions` |
-| `DiscordUser`        | `displayName`, `avatarUrl`               |
-| `DiscordAttachment`  | `isImage`, `formattedSize`               |
-| `DiscordEmbed`       | Embedded content (links, rich previews)  |
-| `DiscordReaction`    | Reaction with count and `me` flag        |
-| `DiscordEmoji`       | Unicode or custom emoji data             |
+| Model                | Key Features                                  |
+| -------------------- | --------------------------------------------- |
+| `ForumThread`        | `copyWith()`, `appliedTags`, `starterMessage` |
+| `ForumChannel`       | `availableTags`, `isForum`                    |
+| `ForumTag`           | `emojiName`, `moderated`                      |
+| `DiscordMessage`     | `copyWith()`, `hasImages`, `hasReactions`     |
+| `DiscordUser`        | `displayName`, `avatarUrl`                    |
+| `DiscordAttachment`  | `isImage`, `formattedSize`                    |
 
 ## Security Note
 
@@ -162,9 +194,7 @@ gateway.onReactionAdd.listen((event) => print(event.emoji.name));
 
 ## Author
 
-**Tuan Anh Bui**
-
-- GitHub: [@tuananhbui89](https://github.com/tuananhbui89)
+**Tuan Anh Bui** — [@BuiTuanAnh2001](https://github.com/BuiTuanAnh2001)
 
 ## License
 

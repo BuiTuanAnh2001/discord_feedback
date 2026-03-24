@@ -22,40 +22,21 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Discord Feedback',
+      title: 'Discord Feedback Example',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF5865F2),
-          brightness: Brightness.light,
-          surface: const Color(0xFFF8F9FB),
-        ),
-        useMaterial3: true,
-        scaffoldBackgroundColor: const Color(0xFFF8F9FB),
-        appBarTheme: const AppBarTheme(
-          centerTitle: false,
-          elevation: 0,
-          scrolledUnderElevation: 0,
-        ),
-        cardTheme: CardThemeData(
-          elevation: 0,
-          margin: EdgeInsets.zero,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-        ),
-        snackBarTheme: SnackBarThemeData(
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-        splashFactory: InkSparkle.splashFactory,
-      ),
+      theme: ThemeData(useMaterial3: true),
       home: DiscordFeedbackView(
         botToken: dotenv.env['DISCORD_BOT_TOKEN'] ?? '',
         channelId: dotenv.env['DISCORD_CHANNEL_ID'] ?? '',
         enableRealtime: true,
+        appName: 'My App',
+        appVersion: '1.0.0',
+        title: 'bug-and-suggestions',
+        channelEmoji: '\uD83D\uDCA1',
+        // Theme auto-saved & restored from local storage.
+        // Change the initial theme or let users customize via the palette button.
+        theme: DiscordFeedbackTheme.dark,
+        persistTheme: true,
       ),
     );
   }
