@@ -1,3 +1,7 @@
+## 2.0.1
+
+- Updated README: removed redundant install section, added screenshots and demo gif
+
 ## 2.0.0
 
 **Breaking**: Full rewrite from chat-style to Discord Forum Channel architecture.
