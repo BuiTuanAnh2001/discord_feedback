@@ -1,0 +1,12 @@
+build/
+.dart_tool/
+android/
+ios/
+linux/
+macos/
+web/
+windows/
+.env
+*.lock
+lib/main.dart
+discord_feedback.iml

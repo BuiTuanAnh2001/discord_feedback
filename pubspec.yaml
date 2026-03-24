@@ -1,0 +1,43 @@
+name: discord_feedback
+description: "A drop-in Flutter widget to display, react, and reply to feedback messages from a Discord channel. Supports real-time WebSocket updates, image attachments, and emoji reactions."
+version: 1.0.0
+homepage: https://github.com/tuananhbui89/discord_feedback
+repository: https://github.com/tuananhbui89/discord_feedback
+issue_tracker: https://github.com/tuananhbui89/discord_feedback/issues
+
+topics:
+  - discord
+  - feedback
+  - chat
+  - widget
+  - realtime
+
+screenshots:
+  - description: "Feedback list screen with messages, reactions, and chat bar"
+    path: screenshots/feedback_list.png
+  - description: "Long-press reaction overlay with emoji picker"
+    path: screenshots/reaction_overlay.png
+  - description: "Message detail screen with quick react and reply"
+    path: screenshots/message_detail.png
+
+environment:
+  sdk: ^3.7.2
+  flutter: ">=3.22.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  dio: ^5.7.0
+  intl: ^0.20.2
+  cached_network_image: ^3.4.1
+  image_picker: ^1.1.2
+  web_socket_channel: ^3.0.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
